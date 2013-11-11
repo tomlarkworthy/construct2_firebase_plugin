@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2eventsheet>
+    <!--All the 'name' attributes are ignored by Construct 2 - they are there for readability only.-->
+    <name>Event sheet 1</name>
+    <events>
+        <event-block sid="7443239982271057">
+            <conditions>
+                <condition id="0" name="On Value" sid="4833328279490479" type="Firebase">
+                    <param id="0" name="DataRef">&quot;/text_box&quot;</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="0" name="Set text" sid="4334089635882115" type="string_value">
+                    <param id="0" name="Text">Firebase.LastString</param>
+                </action>
+            </actions>
+        </event-block>
+        <event-block sid="7643757577343528">
+            <conditions>
+                <condition id="1" name="On text changed" sid="2136378295336376" type="string_value" />
+            </conditions>
+            <actions>
+                <action id="0" name="Set String Value" sid="9927423012690414" type="Firebase">
+                    <param id="0" name="DataRef">&quot;/text_box&quot;</param>
+                    <param id="1" name="String">string_value.Text</param>
+                </action>
+            </actions>
+        </event-block>
+    </events>
+</c2eventsheet>
