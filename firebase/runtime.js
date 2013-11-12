@@ -82,6 +82,14 @@ cr.plugins_.Firebase = function(runtime)
 	{
 		theInstance = this;
 		this.domain = this.properties[0];
+		
+		this.auth = new FirebaseSimpleLogin(new Firebase(this.domain), function(error, user) {
+			if(error){
+				theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginFail, theInstance);
+			}else{
+				theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginSuccess, theInstance);
+			}
+		});
 	};
 	
 	
@@ -103,8 +111,19 @@ cr.plugins_.Firebase = function(runtime)
 
 	Cnds.prototype.Callback = function (tag)
 	{
-		console.log("trigger test", tag, this.curTag);
+		//console.log("trigger test", tag, this.curTag);
 		return cr.equals_nocase(tag, this.curTag);
+	};
+	
+	
+	Cnds.prototype.LoginSuccess = function (tag)
+	{
+		return true;
+	};
+	
+	Cnds.prototype.LoginFail = function (tag)
+	{
+		return true;
 	};
 	
 	pluginProto.cnds = new Cnds();
@@ -120,7 +139,7 @@ cr.plugins_.Firebase = function(runtime)
 	
 	Acts.prototype.SetJSON = function (ref_, val_)
 	{		
-		console.log(val_);
+		//console.log(val_);
 		new Firebase(this.domain + ref_).set(JSON.parse(val_));
 	};
 	
@@ -167,6 +186,28 @@ cr.plugins_.Firebase = function(runtime)
 			self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
 		});
 		
+	};
+	
+	
+	
+	//LOGIN ACTIONS	
+	Acts.prototype.LoginFB = function (remeber_, scope_)
+	{		
+		var remeber_me = [false, true][remeber_];		
+		this.auth.login('facebook', {
+		  rememberMe: remeber_me,
+		  scope: scope_
+		});
+	};
+	
+	Acts.prototype.LoginEmailPassword = function (remeber_, email, password)
+	{		
+		var remeber_me = [false, true][remeber_];		
+		this.auth.login('password', {
+		  email: email,
+		  password: password,
+		  rememberMe: remeber_me
+		});
 	};
 	
 	pluginProto.acts = new Acts();

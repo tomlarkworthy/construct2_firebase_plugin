@@ -11,7 +11,7 @@ function GetPluginSettings()
 		"type":			"object",				// either "world" (appears in layout and is drawn), else "object"
 		"rotatable":	false,					// only used when "type" is "world".  Enables an angle property on the object.
 		"flags":		pf_singleglobal,
-		"dependency":	"https://cdn.firebase.com/v0/firebase.js"
+		"dependency":	"https://cdn.firebase.com/v0/firebase.js; https://cdn.firebase.com/v0/firebase-simple-login.js"
 	};
 };
 
@@ -44,6 +44,10 @@ function GetPluginSettings()
 			
 AddStringParam("Tag", "The callback identifier", "my tag");
 AddCondition(0,	cf_trigger, "Firebase callback", "Firebase", "<b>{0}</b> event", "Triggered when Firebase changes", "Callback");
+
+
+AddCondition(500, cf_trigger, "Login success", "Login", "login success", "Triggered on user login", "LoginSuccess");
+AddCondition(501, cf_trigger, "Login error", "Login", "login failed", "Triggered when user fails to login", "LoginFail");
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -102,6 +106,21 @@ AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddAction(8, 0, "Remove", "Firebase", "Remove data at <i>{0}</i>", "Removes the data at the data ref", "Remove");
 
 
+///////////////LOGINS////
+AddComboParamOption("No");
+AddComboParamOption("Yes");
+AddComboParam("rememberMe", "keeps the user session for 30 days");
+AddStringParam("scope", "A comma-delimited list of requested extended permissions");
+AddAction(500, 0, "Login Facebook", "Login", "Login user with Facebook", "Login user with Facebook", "LoginFB");
+
+AddComboParamOption("No");
+AddComboParamOption("Yes");
+AddComboParam("rememberMe", "keeps the user session for 30 days");
+AddStringParam("email", "user email");
+AddStringParam("password", "user password");
+AddAction(501, 0, "Login Password", "Login", "Login user with email+password", "Login user with Login user with email+password", "LoginEmailPassword");
+
+
 //////////////////////////////////////////////////////////////
 // Expressions
 //AddExpression(id, flags, list_name, category, expression_name, description);
@@ -124,8 +143,7 @@ ACESDone();
 // new cr.Property(ept_link,		name,	link_text,		description, "firstonly")		// has no associated value; simply calls "OnPropertyChanged" on click
 
 var property_list = [
-	new cr.Property(ept_text,	"Firebase Domain", "https://construct2example.firebaseio.com/", "The root location of the Firebase data"),
-	new cr.Property(ept_combo,	"Enable Auth",	"No", "Enable Simple Authentication (not implemented)", "No"),
+	new cr.Property(ept_text,	"Firebase Domain", "https://construct2example.firebaseio.com/", "The root location of the Firebase data")
 ];
 	
 // Called by IDE when a new object type is to be created
