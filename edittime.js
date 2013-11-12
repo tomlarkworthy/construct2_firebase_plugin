@@ -41,9 +41,9 @@ function GetPluginSettings()
 //				display_str,		// as appears in event sheet - use {0}, {1} for parameters and also <b></b>, <i></i>
 //				description,		// appears in event wizard dialog when selected
 //				script_name);		// corresponding runtime function name
-						
-AddStringParam("DataRef", "The Firebase data ref extension", "\"/myref\"");
-AddCondition(0,	cf_none, "On Value", "Firebase", "<b>{0}</b> value changed", "Triggered when the value at the DataRef is received", "OnValue");
+			
+AddStringParam("Tag", "The callback identifier", "my tag");
+AddCondition(0,	cf_trigger, "Firebase callback", "Firebase", "<b>{0}</b> event", "Triggered when Firebase changes", "Callback");
 
 ////////////////////////////////////////
 ////////////////////////////////////////
@@ -60,13 +60,55 @@ AddCondition(0,	cf_none, "On Value", "Firebase", "<b>{0}</b> value changed", "Tr
 
 // example
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
-AddStringParam("String", "The value");
-AddAction(0, 0, "Set String Value", "Firebase", "Set <i>{0}</i> to <i>{1}</i>", "Sets a string value of the data ref", "SetString");
+AddStringParam("String Value", "The value to set");
+AddAction(0, 0, "Set String Value", "Firebase", "Set String<i>{0}</i> to <i>{1}</i>", "Sets a string value of the data ref", "SetString");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("JSON Value", "The object/JSON to set");
+AddAction(1, 0, "Set JSON Value", "Firebase", "Set Number<i>{0}</i> to <i>{1}</i>", "Sets an object/JSON value of the data ref", "SetJSON");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddNumberParam("Number Value", "The number to set");
+AddAction(2, 0, "Set Number Value", "Firebase", "Set JSON<i>{0}</i> to <i>{1}</i>", "Sets a number value of the data ref", "SetNumber");
+
+
+AddStringParam("DataRef", "The Firebase data ref extension", "\"/myref\"");
+AddStringParam("Tag",     "The tag to identify the callback", "my tag");
+AddComboParamOption("value");
+AddComboParamOption("child_added");
+AddComboParamOption("child_changed");
+AddComboParamOption("child_removed");
+AddComboParamOption("child_moved");
+AddComboParam("eventType ", "which Firebase event type to register")	;
+AddAction(3, 0, "Register Callback", "Firebase", "<i>{2}</i> callback for <i>{0}</i> registered under <i>{1}</i>", "Triggered when the Firebase changes", "RegisterCallback");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("JSON Value", "The value to update to");
+AddAction(4, 0, "UpdateJSON", "Firebase", "Update <i>{0}</i> to <i>{1}</i>", "Updates values at the data ref", "UpdateJSON");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("String Value", "The value to push");
+AddAction(5, 0, "Push String", "Firebase", "Push String <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushString");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddNumberParam("Number Value", "The value to push");
+AddAction(6, 0, "Push Number", "Firebase", "Push Number <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushNumber");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("JSON Value", "The value to push");
+AddAction(7, 0, "Push JSON", "Firebase", "Push JSON <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushJSON");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddAction(8, 0, "Remove", "Firebase", "Remove data at <i>{0}</i>", "Removes the data at the data ref", "Remove");
+
 
 //////////////////////////////////////////////////////////////
 // Expressions
 //AddExpression(id, flags, list_name, category, expression_name, description);
-AddExpression(0, ef_return_string, "Get last string value", "Firebase", "LastString", "Get the data returned by the triggered ref");
+AddExpression(0, ef_return_string, "Get value as a string", "Firebase", "ValString", "string data received by the trigger as a string");
+AddExpression(1, ef_return_string, "Get value as a object JSON", "Firebase", "ValJSON", "object data received by the trigger as a JSON");
+AddExpression(2, ef_return_string, "Get value as a number", "Firebase", "ValNumber", "object data received by the trigger as a Number");
+AddExpression(3, ef_return_string, "Get data reference", "Firebase", "Ref", "URL location of data received by the trigger");
 
 ////////////////////////////////////////
 ACESDone();
