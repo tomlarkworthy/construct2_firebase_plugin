@@ -11,7 +11,6 @@ function GetPluginSettings()
 		"type":			"object",				// either "world" (appears in layout and is drawn), else "object"
 		"rotatable":	false,					// only used when "type" is "world".  Enables an angle property on the object.
 		"flags":		pf_singleglobal,
-		"dependency":	"https://cdn.firebase.com/v0/firebase.js; https://cdn.firebase.com/v0/firebase-simple-login.js"
 	};
 };
 

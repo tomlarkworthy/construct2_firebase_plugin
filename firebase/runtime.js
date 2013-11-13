@@ -38,6 +38,21 @@ cr.plugins_.Firebase = function(runtime)
 	var nw_appfolder = "";
 	
 	var pluginProto = cr.plugins_.Firebase.prototype;
+	
+	var when_loaded  = $.Deferred();
+	
+	var firebase_script = document.createElement("script");
+	firebase_script.src = "https://cdn.firebase.com/v0/firebase.js";
+	document.getElementsByTagName("head")[0].appendChild(firebase_script);
+	firebase_script.onload = function() {		 
+		var firebase_auth_script = document.createElement("script");
+		firebase_auth_script.src = "https://cdn.firebase.com/v0/firebase-simple-login.js"		
+		document.getElementsByTagName("head")[0].appendChild(firebase_auth_script);
+		firebase_auth_script.onload = function(){
+			//console.log("auth loaded")
+			when_loaded.resolve();
+		}
+	}
 		
 	/////////////////////////////////////
 	// Object type class
@@ -48,6 +63,23 @@ cr.plugins_.Firebase = function(runtime)
 	};
 
 	var typeProto = pluginProto.Type.prototype;
+	
+	//get around minification rules
+	var global = Function('return this')();
+	//a minifiable version of "new Firebase(path)";
+	var newFirebase = function(path){ 
+		var obj = Object.create(global["Firebase"].prototype)
+		var constructed = global["Firebase"].call(obj, path) 
+		return obj;
+		
+	};
+	//a minifiable version of "new FirebaseSimpleLogin(ref, callback)";
+	var newFirebaseSimpleLogin = function(ref, callback){
+		var obj = Object.create(global["FirebaseSimpleLogin"].prototype)		
+		var constructed = global["FirebaseSimpleLogin"].call(obj, ref, callback) 
+		return obj;
+		//return new FirebaseSimpleLogin(ref, callback);
+	};
 
 	typeProto.onCreate = function()
 	{
@@ -81,14 +113,19 @@ cr.plugins_.Firebase = function(runtime)
 	instanceProto.onCreate = function()
 	{
 		theInstance = this;
-		this.domain = this.properties[0];
+		theInstance.domain = this.properties[0];
 		
-		this.auth = new FirebaseSimpleLogin(new Firebase(this.domain), function(error, user) {
-			if(error){
-				theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginFail, theInstance);
-			}else{
-				theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginSuccess, theInstance);
-			}
+		theInstance.auth = {};
+		
+		when_loaded.then(function(){
+			
+			theInstance.auth = newFirebaseSimpleLogin(newFirebase(theInstance.domain), function(error, user) {
+				if(error){
+					theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginFail, theInstance);
+				}else{
+					theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginSuccess, theInstance);
+				}
+			})
 		});
 	};
 	
@@ -134,79 +171,77 @@ cr.plugins_.Firebase = function(runtime)
 
 	Acts.prototype.SetString = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).set(String(val_));
+		newFirebase(this.domain + ref_)["set"](String(val_));
 	};
 	
 	Acts.prototype.SetJSON = function (ref_, val_)
 	{		
-		//console.log(val_);
-		new Firebase(this.domain + ref_).set(JSON.parse(val_));
+		newFirebase(this.domain + ref_)["set"](JSON.parse(val_));
 	};
 	
 	Acts.prototype.SetNumber = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).set(Number(val_));
+		newFirebase(this.domain + ref_)["set"](Number(val_));
 	};
 	
 	Acts.prototype.UpdateJSON = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).update(JSON.parse(val_));
+		newFirebase(this.domain + ref_)["update"](JSON.parse(val_));
 	};		
 	
 	Acts.prototype.PushString = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).push(String(val_));
+		newFirebase(this.domain + ref_)["push"](String(val_));
 	};
 	
 	Acts.prototype.PushNumber = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).push(Number(val_));
+		newFirebase(this.domain + ref_)["push"](Number(val_));
 	};
 	
 	Acts.prototype.PushJSON = function (ref_, val_)
 	{		
-		new Firebase(this.domain + ref_).push(JSON.parse(val_));
+		newFirebase(this.domain + ref_)["push"](JSON.parse(val_));
 	};	
 	
 	Acts.prototype.Remove = function (ref_)
 	{		
-		new Firebase(this.domain + ref_).remove();
+		newFirebase(this.domain + ref_)["remove"]();
 	};
 	
 	Acts.prototype.RegisterCallback = function (ref_, tag_, type_)
 	{		
 		var type = ["value", "child_added", "child_changed", "child_removed","child_moved"][type_]
 		var self = this;
-	
-		var ref = new Firebase(this.domain + ref_).on(type, function(snapshot){
 		
-			console.log("callback ", type, tag_, ref_);
-			self.lastSnapshot = snapshot;
-			self.curTag = tag_;
-			self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
+		when_loaded.then(function(){
+			var ref = newFirebase(self.domain + ref_)["on"](type, function(snapshot){			
+				//console.log("callback ", type, tag_, ref_);
+				self.lastSnapshot = snapshot;
+				self.curTag = tag_;
+				self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
+			});
 		});
 		
 	};
-	
-	
 	
 	//LOGIN ACTIONS	
 	Acts.prototype.LoginFB = function (remeber_, scope_)
 	{		
 		var remeber_me = [false, true][remeber_];		
-		this.auth.login('facebook', {
-		  rememberMe: remeber_me,
-		  scope: scope_
+		this.auth["login"]('facebook', {
+		  'rememberMe': remeber_me,
+		  'scope': scope_
 		});
 	};
 	
 	Acts.prototype.LoginEmailPassword = function (remeber_, email, password)
 	{		
 		var remeber_me = [false, true][remeber_];		
-		this.auth.login('password', {
-		  email: email,
-		  password: password,
-		  rememberMe: remeber_me
+		this.auth["login"]('password', {
+		  'email': email,
+		  'password': password,
+		  'rememberMe': remeber_me
 		});
 	};
 	
@@ -218,22 +253,22 @@ cr.plugins_.Firebase = function(runtime)
 
 	Exps.prototype.ValString = function (ret)
 	{	
-		ret.set_string(String(this.lastSnapshot.val()));
+		ret.set_string(String(this.lastSnapshot["val"]()));
 	};
 	
 	Exps.prototype.ValJSON = function (ret)
 	{	
-		ret.set_string(JSON.stringify(this.lastSnapshot.val()));
+		ret.set_string(JSON.stringify(this.lastSnapshot["val"]()));
 	};
 	
 	Exps.prototype.ValNumber = function (ret)
 	{	
-		ret.set_float(this.lastSnapshot.val());
+		ret.set_float(this.lastSnapshot["val"]());
 	};
 	
 	Exps.prototype.Ref = function (ret)
 	{	
-		ret.set_string(this.lastSnapshot.ref().toString().substring(this.domain.length-1));
+		ret.set_string(this.lastSnapshot["ref"]()["toString"]().substring(this.domain.length-1));
 	};
 	
 	pluginProto.exps = new Exps();
