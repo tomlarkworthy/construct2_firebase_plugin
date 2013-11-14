@@ -1,1 +1,5 @@
-script: "./.build.sh"
+script: ./.build.sh
+env:
+  global:
+  - secure: KQ0VW+mf9POB2SOnUHCJSluDOQ/vrt9UnoLUCUgTZTCt7M3ziw5j9fpLuG1LKHiLa7pcCpktEPsBDp1fr1b+lTpPzTKgJay11VCBIv6FSgRDDJGys7ArBoxiYqJBZWJOlrhIn25nkloOS7k4wGhvOD3rYQGm6GIu2hxZNY75BYA=
+  - secure: mVe6lrLXYfm8oFmVEH4s8KR3oVYJbNwYaenN8nUW/IZ9j/vcU41O/BSxQ85J55UwNfUME7FCwhUhrpTt2VfaM3Mw8YLkekypRNwreutVwSxQeXlhUNFzKea4Ys40DCwZ0XrV1YDIygTTeiUInR4TmVLdJUds4P93Z0T3cI8/WaQ=
