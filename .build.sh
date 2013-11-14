@@ -7,7 +7,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   echo -e "Starting to update gh-pages\n"
 
   #copy data we're interested in to other place
-  cp -R firebase.zip  $HOME/coverage
+  cp firebase.zip  $HOME/firebase.zip
 
   #go to home and setup git
   cd $HOME
@@ -19,10 +19,10 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
 
   #go into directory and copy data we're interested in to that directory
   cd gh-pages
-  cp -Rf $HOME/coverage/* .
+  cp $HOME/firebase.zip .
 
   #add, commit and push files
-  git add -f .
+  git add -f $HOME/firebase.zip
   git commit -m "Travis build $TRAVIS_BUILD_NUMBER pushed to gh-pages"
   git push -fq origin gh-pages > /dev/null
 
