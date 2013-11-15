@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html manifest="offline.appcache">
+<head>
+    <meta charset="UTF-8" />
+	
+	<!-- This ensures the canvas works on IE9+.  Don't remove it! -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	
+	<title>Firebase Sample</title>
+	<!-- Note: running this exported project from disk may not work exactly like preview, since browsers block some features on the file:// protocol.  Once you've uploaded it to a server, it should work OK. -->
+	
+    <!-- This outlines the canvas with a black border and makes the page background black. -->
+	<style type="text/css">
+		body { background-color: black; color: white; }
+		canvas { -ms-touch-action: none; }
+	</style>
+
+
+</head> 
+ 
+<body> 
+	<div id="fb-root"></div>
+	<div style="text-align: center;">
+
+	<script>
+	// Issue a warning if trying to preview an exported project on disk.
+	(function(){
+		// Check for running exported on file protocol
+		if (window.location.protocol.substr(0, 4) === "file")
+		{
+			alert("Exported games won't work until you upload them.");
+		}
+	})();
+	</script>
+
+		<!-- The canvas must be inside a div called c2canvasdiv -->
+		<div id="c2canvasdiv" style="margin: 0 auto; width: 640px; height: 480px;">
+		
+			<!-- The canvas the project will render to.  If you change its ID, don't forget to change the
+			ID the runtime looks for in the jQuery ready event (above). -->
+			<canvas id="c2canvas" width="640" height="480">
+				<!-- This text is displayed if the visitor's browser does not support HTML5.
+				You can change it, but it is a good idea to link to a description of a browser
+				and provide some links to download some popular HTML5-compatible browsers. -->
+				Your browser does not appear to support HTML5.  Try upgrading your browser to the latest version.  <a href="http://www.whatbrowser.org">What is a browser?</a>
+				<br/><br/><a href="http://www.microsoft.com/windows/internet-explorer/default.aspx">Microsoft Internet Explorer</a><br/>
+				<a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a><br/>
+				<a href="http://www.google.com/chrome/">Google Chrome</a><br/>
+				<a href="http://www.apple.com/safari/download/">Apple Safari</a><br/>
+				<a href="http://www.google.com/chromeframe">Google Chrome Frame for Internet Explorer</a><br/>
+			</canvas>
+			
+		</div>
+
+        <br />
+		
+
+	</div>
+	
+	<!-- Pages load faster with scripts at the bottom -->
+	
+	<!-- Construct 2 exported games require jQuery. -->
+	<script src="jquery-2.0.0.min.js"></script>
+
+
+	
+    <!-- The runtime script.  You can rename it, but don't forget to rename the reference here as well.
+    This file will have been minified and obfuscated if you enabled "Minify script" during export. -->
+	<script src="c2runtime.js"></script>
+
+    <script>
+		function updateCanvasSize()
+		{
+			var w = jQuery(window).width();
+			var h = jQuery(window).height();
+			cr_sizeCanvas(w, h);
+		};
+		
+		var resizeIntervalId = -1;
+		
+		jQuery(window).resize(function() {
+			if (window.c2resizestretchmode === 1)
+			{
+				window.c2resizestretchmode = 2;		// put back when breaking back out of fullscreen
+				var canvas = document.getElementById("c2canvas");
+				window.c2oldcanvaswidth = canvas.width;
+				window.c2oldcanvasheight = canvas.height;
+				window.c2eventtime = Date.now();
+				updateCanvasSize();
+				
+				// Mac OS X has a "pretty" animation while it expands out in to fullscreen.
+				// This seems to not get the right window size right away. So resize 4 times/sec
+				// for the next 1.5 sec to wait for the animation to finish then get the right size.
+				resizeIntervalId = setInterval(updateCanvasSize, 250);
+				setTimeout(function () {
+					clearInterval(resizeIntervalId);
+					resizeIntervalId = -1;
+				}, 1600);
+			}
+			else if (window.c2resizestretchmode === 2)
+			{
+				// Prevent re-firing size events during the initial fullscreen opening from
+				// messing this up. Wait for the 2 sec timeout.
+				if (resizeIntervalId === -1)
+				{
+					window.c2resizestretchmode = 0;
+					cr_sizeCanvas(window.c2oldcanvaswidth, window.c2oldcanvasheight);
+					
+					// re-center the canvas
+					jQuery("#c2canvasdiv").css("margin", "0 auto");
+				}
+			}
+		});
+	
+		// Start the Construct 2 project running on window load.
+		jQuery(document).ready(function ()
+		{
+			// Create new runtime using the c2canvas
+			cr_createRuntime("c2canvas");
+		});
+		
+		// Pause and resume on page becoming visible/invisible
+		function onVisibilityChanged() {
+			if (document.hidden || document.mozHidden || document.webkitHidden || document.msHidden)
+				cr_setSuspended(true);
+			else
+				cr_setSuspended(false);
+		};
+		
+		document.addEventListener("visibilitychange", onVisibilityChanged, false);
+		document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
+		document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
+		document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
+    </script>
+</body> 
+</html> 
