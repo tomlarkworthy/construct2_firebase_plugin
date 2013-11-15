@@ -10,7 +10,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   cp firebase.zip  $HOME/firebase.zip
   
   #copy demo site
-  cp demo-site     $HOME/demo-site
+  cp -r demo-site   $HOME/demo-site
 
   #go to home and setup git
   cd $HOME
@@ -23,7 +23,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   #go into directory and copy data we're interested in to that directory
   cd gh-pages
   cp $HOME/firebase.zip .
-  cp $HOME/demo-site .
+  cp -r $HOME/demo-site .
 
   #add, commit and push files
   git add -f firebase.zip
