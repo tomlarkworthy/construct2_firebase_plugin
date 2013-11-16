@@ -44,6 +44,10 @@ function GetPluginSettings()
 AddStringParam("Tag", "The callback identifier", "my tag");
 AddCondition(0,	cf_trigger, "Firebase callback", "Firebase", "<b>{0}</b> event", "Triggered when Firebase changes", "Callback");
 
+AddStringParam("Tag", "The callback identifier", "my tag");
+AddCondition(1,	cf_trigger, "Firebase once callback", "Firebase", "<b>{0}</b> once", "Triggered exactly once, whether-or-not the data exists", "Once");
+
+AddCondition(100, cf_none, "is null", "Reading", "was null", "Was read data null", "isNull");
 
 AddCondition(500, cf_trigger, "Login success", "Login", "login success", "Triggered on user login", "LoginSuccess");
 AddCondition(501, cf_trigger, "Login error", "Login", "login failed", "Triggered when user fails to login", "LoginFail");
@@ -83,26 +87,37 @@ AddComboParamOption("child_changed");
 AddComboParamOption("child_removed");
 AddComboParamOption("child_moved");
 AddComboParam("eventType ", "which Firebase event type to register")	;
-AddAction(3, 0, "Register Callback", "Firebase", "<i>{2}</i> callback for <i>{0}</i> registered under <i>{1}</i>", "Triggered when the Firebase changes", "RegisterCallback");
+AddAction(3, 0, "Register Callback", "Reading", "<i>{2}</i> callback for <i>{0}</i> registered under <i>{1}</i>", "Triggered when the Firebase changes", "RegisterCallback");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddStringParam("JSON Value", "The value to update to");
-AddAction(4, 0, "UpdateJSON", "Firebase", "Update <i>{0}</i> to <i>{1}</i>", "Updates values at the data ref", "UpdateJSON");
+AddAction(4, 0, "UpdateJSON", "Writing", "Update <i>{0}</i> to <i>{1}</i>", "Updates values at the data ref", "UpdateJSON");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddStringParam("String Value", "The value to push");
-AddAction(5, 0, "Push String", "Firebase", "Push String <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushString");
+AddAction(5, 0, "Push String", "Writing", "Push String <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushString");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddNumberParam("Number Value", "The value to push");
-AddAction(6, 0, "Push Number", "Firebase", "Push Number <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushNumber");
+AddAction(6, 0, "Push Number", "Writing", "Push Number <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushNumber");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddStringParam("JSON Value", "The value to push");
-AddAction(7, 0, "Push JSON", "Firebase", "Push JSON <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushJSON");
+AddAction(7, 0, "Push JSON", "Writing", "Push JSON <i>{0}</i> with <i>{1}</i>", "Pushes a value on the list at data ref", "PushJSON");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
-AddAction(8, 0, "Remove", "Firebase", "Remove data at <i>{0}</i>", "Removes the data at the data ref", "Remove");
+AddAction(8, 0, "Remove", "Writing", "Remove data at <i>{0}</i>", "Removes the data at the data ref", "Remove");
+
+
+AddStringParam("DataRef", "The Firebase data ref extension", "\"/myref\"");
+AddStringParam("Tag",     "The tag to identify the callback", "my tag");
+AddComboParamOption("value");
+AddComboParamOption("child_added");
+AddComboParamOption("child_changed");
+AddComboParamOption("child_removed");
+AddComboParamOption("child_moved");
+AddComboParam("eventType ", "which Firebase event type to register")	;
+AddAction(9, 0, "Register Once Callback", "Reading", "<i>{2}</i> callback for <i>{0}</i> registered under <i>{1}</i>", "Retrieves data exactly once, whether the data exists or not", "RegisterOnce");
 
 
 ///////////////LOGINS////
@@ -125,8 +140,13 @@ AddAction(501, 0, "Login Password", "Login", "Login user with email+password", "
 //AddExpression(id, flags, list_name, category, expression_name, description);
 AddExpression(0, ef_return_string, "Get value as a string", "Firebase", "ValString", "string data received by the trigger as a string");
 AddExpression(1, ef_return_string, "Get value as a object JSON", "Firebase", "ValJSON", "object data received by the trigger as a JSON");
-AddExpression(2, ef_return_string, "Get value as a number", "Firebase", "ValNumber", "object data received by the trigger as a Number");
+AddExpression(2, ef_return_number, "Get value as a number", "Firebase", "ValNumber", "object data received by the trigger as a Number");
 AddExpression(3, ef_return_string, "Get data reference", "Firebase", "Ref", "URL location of data received by the trigger");
+
+//login expressions
+AddExpression(4, ef_return_string, "Get the provider for the logged in user", "Login", "LoginProvider", "Get the provider for the logged in user");
+AddExpression(5, ef_return_string, "Get the provider's id for the logged in user", "Login", "LoginID", "Get the provider's id for the logged in user");
+AddExpression(6, ef_return_string, "Get a unique id for the logged in user", "Login", "LoginUID", "Get a unique id for the logged in user");
 
 ////////////////////////////////////////
 ACESDone();

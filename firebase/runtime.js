@@ -93,6 +93,7 @@ cr.plugins_.Firebase = function(runtime)
 		this.runtime = type.runtime;
 		
 		this.lastSnapshot = "";
+		this.lastUser = {};
 		this.curTag = "";
 		
 		
@@ -120,6 +121,7 @@ cr.plugins_.Firebase = function(runtime)
 		when_loaded.then(function(){
 			
 			theInstance.auth = newFirebaseSimpleLogin(newFirebase(theInstance.domain), function(error, user) {
+				theInstance.lastUser = user;
 				if(error){
 					theInstance.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.LoginFail, theInstance);
 				}else{
@@ -136,7 +138,6 @@ cr.plugins_.Firebase = function(runtime)
 		propsections.push({
 			"title": "Firebase",
 			"properties": [
-				{"name": "Last data", "value": this.lastString, "readonly": true}
 			]
 		});
 	};
@@ -148,8 +149,21 @@ cr.plugins_.Firebase = function(runtime)
 
 	Cnds.prototype.Callback = function (tag)
 	{
-		//console.log("trigger test", tag, this.curTag);
+		//console.log("trigger Callback", tag, this.curTag);
 		return cr.equals_nocase(tag, this.curTag);
+	};
+	
+	
+	Cnds.prototype.Once = function (tag)
+	{
+		//console.log("trigger Once", tag, this.curTag);
+		return cr.equals_nocase(tag, this.curTag);
+	};
+	
+	
+	Cnds.prototype.isNull = function ()
+	{
+		return this.lastSnapshot.val() === null;
 	};
 	
 	
@@ -221,8 +235,22 @@ cr.plugins_.Firebase = function(runtime)
 				self.curTag = tag_;
 				self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
 			});
-		});
-		
+		});		
+	};
+	
+	Acts.prototype.RegisterOnce = function (ref_, tag_, type_)
+	{		
+		var type = ["value", "child_added", "child_changed", "child_removed","child_moved"][type_]
+		var self = this;
+		//console.log("register once ", type, tag_, ref_);
+		when_loaded.then(function(){
+			var ref = newFirebase(self.domain + ref_)["once"](type, function(snapshot){			
+				//console.log("once called ", type, tag_, ref_);
+				self.lastSnapshot = snapshot;
+				self.curTag = tag_;
+				self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Once, self);
+			});
+		});		
 	};
 	
 	//LOGIN ACTIONS	
@@ -271,5 +299,20 @@ cr.plugins_.Firebase = function(runtime)
 		ret.set_string(this.lastSnapshot["ref"]()["toString"]().substring(this.domain.length-1));
 	};
 	
+	Exps.prototype.LoginProvider = function (ret)
+	{	
+		ret.set_string(this.lastUser["provider"]);
+	};
+	
+	Exps.prototype.LoginID = function (ret)
+	{	
+		ret.set_string(this.lastUser["id"]);
+	};
+	
+	Exps.prototype.LoginUID = function (ret)
+	{	
+		ret.set_string(this.lastUser["uid"]);
+	};
+		
 	pluginProto.exps = new Exps();
 }());
