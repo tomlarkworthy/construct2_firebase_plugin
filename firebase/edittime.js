@@ -72,11 +72,11 @@ AddAction(0, 0, "Set String Value", "Firebase", "Set String<i>{0}</i> to <i>{1}<
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddStringParam("JSON Value", "The object/JSON to set");
-AddAction(1, 0, "Set JSON Value", "Firebase", "Set Number<i>{0}</i> to <i>{1}</i>", "Sets an object/JSON value of the data ref", "SetJSON");
+AddAction(1, 0, "Set JSON Value", "Firebase", "Set JSON<i>{0}</i> to <i>{1}</i>", "Sets an object/JSON value of the data ref", "SetJSON");
 
 AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
 AddNumberParam("Number Value", "The number to set");
-AddAction(2, 0, "Set Number Value", "Firebase", "Set JSON<i>{0}</i> to <i>{1}</i>", "Sets a number value of the data ref", "SetNumber");
+AddAction(2, 0, "Set Number Value", "Firebase", "Set Number<i>{0}</i> to <i>{1}</i>,", "Sets a number value of the data ref", "SetNumber");
 
 
 AddStringParam("DataRef", "The Firebase data ref extension", "\"/myref\"");
@@ -118,6 +118,23 @@ AddComboParamOption("child_removed");
 AddComboParamOption("child_moved");
 AddComboParam("eventType ", "which Firebase event type to register")	;
 AddAction(9, 0, "Register Once Callback", "Reading", "<i>{2}</i> callback for <i>{0}</i> registered under <i>{1}</i>", "Retrieves data exactly once, whether the data exists or not", "RegisterOnce");
+
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("String Value", "The value to set");
+AddStringParam("onComplete Tag", "The callback to notify when this set is complete");
+AddAction(10, 0, "Set String Value with acknowledgment", "Firebase", "Set String<i>{0}</i> to <i>{1}</i> then notify <i>{2}</i>", "Sets a string value of the data ref and notified when complete", "SetStringAck");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddStringParam("JSON Value", "The object/JSON to set");
+AddStringParam("onComplete Tag", "The callback to notify when this set is complete");
+AddAction(11, 0, "Set JSON Value with acknowledgment", "Firebase", "Set JSON<i>{0}</i> to <i>{1}</i> then notify <i>{2}</i>", "Sets an object/JSON value of the data ref and notified when complete", "SetJSONAck");
+
+AddStringParam("DataRef", "The Firebase data ref URL", "\"/myref\"");
+AddNumberParam("Number Value", "The number to set");
+AddStringParam("onComplete Tag", "The callback to notify when this set is complete");
+AddAction(12, 0, "Set Number Value with acknowledgment", "Firebase", "Set Number<i>{0}</i> to <i>{1}</i> then notify <i>{2}</i>", "Sets a number value of the data ref and notified when complete", "SetNumberAck");
+
 
 
 ///////////////LOGINS////

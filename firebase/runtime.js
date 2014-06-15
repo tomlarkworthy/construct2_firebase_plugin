@@ -197,6 +197,33 @@ cr.plugins_.Firebase = function(runtime)
 	{		
 		newFirebase(this.domain + ref_)["set"](Number(val_));
 	};
+
+	Acts.prototype.SetStringAck = function (ref_, val_, tag_)
+	{		
+		self = this;
+		newFirebase(this.domain + ref_)["set"](String(val_), function(err){
+			self.curTag = tag_;
+			self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
+		});
+	};
+	
+	Acts.prototype.SetJSONAck = function (ref_, val_, tag_)
+	{		
+		self = this;
+		newFirebase(this.domain + ref_)["set"](JSON.parse(val_), function(err){
+			self.curTag = tag_;
+			self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
+		});
+	};
+	
+	Acts.prototype.SetNumberAck = function (ref_, val_, tag_)
+	{		
+		self = this;
+		newFirebase(this.domain + ref_)["set"](Number(val_), function(err){
+			self.curTag = tag_;
+			self.runtime.trigger(cr.plugins_.Firebase.prototype.cnds.Callback, self);
+		});
+	};
 	
 	Acts.prototype.UpdateJSON = function (ref_, val_)
 	{		
